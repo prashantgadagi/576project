@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
  * 
  * @author Giulio
  */
-public class PlayWaveFile {
+public class PlayVideo {
 
 	/**
 	 * <Replace this with one clearly defined responsibility this method does.>
