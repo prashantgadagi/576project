@@ -1,49 +1,17 @@
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-/**
- * plays a wave file using PlaySound class
- * 
- * @author Giulio
- */
 public class PlayVideo {
-
-	/**
-	 * <Replace this with one clearly defined responsibility this method does.>
-	 * 
-	 * @param args
-	 *            the name of the wave file to play
-	 */
 	public static void main(String[] args) {
 
 		// get the command line parameters
-		if (args.length < 1) {
+		if (args.length < 2) {
 			System.err.println("usage: java -jar PlayWaveFile.jar [filename]");
 			return;
 		}
-		String filename = args[0];
-
-		// opens the inputStream
-		FileInputStream inputStream;
-		try {
-			inputStream = new FileInputStream(filename);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return;
-		}
-
-		// initializes the playSound Object
-		PlaySound playSound = new PlaySound(
-				new BufferedInputStream(inputStream));
-
-		// plays the sound
-		try {
-			playSound.play();
-		} catch (PlayWaveException e) {
-			e.printStackTrace();
-			return;
-		}
+		
+		PlayAudio playAudio = new PlayAudio(args[0]);
+		PlayRGBVideo playVideo = new PlayRGBVideo(args[1]);
+		
+		
+		new Thread(playVideo).start();
+		new Thread(playAudio).start();
 	}
-
 }
