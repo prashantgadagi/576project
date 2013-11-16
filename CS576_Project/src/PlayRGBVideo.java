@@ -7,31 +7,29 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 
 public class PlayRGBVideo implements Runnable{
 	String file;
+	JPanel contentPane;
 	public PlayRGBVideo() {}
 	
-	public PlayRGBVideo(String file) {
+	public PlayRGBVideo(String file, JPanel contentPane) {
 		this.file = file;
+		this.contentPane = contentPane;
 	}
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		int width = 352;
 		int height = 288;
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
 		InputStream is;
 		
-		JFrame frame = new JFrame();
-		frame.setTitle("Original Image");
 		JLabel label;
-		
 		try {
 			File file = new File(this.file);
 			is = new FileInputStream(file);
@@ -40,8 +38,9 @@ public class PlayRGBVideo implements Runnable{
 			long frameLength = width*height*3;
 			byte[] bytes = new byte[(int) frameLength];
 			int totalRead = 0;
-			int count = 1;
+
 			while(totalRead < len) {
+				long st = System.currentTimeMillis();
 				int numRead = 0;
 				int offset = 0;
 				while (offset < bytes.length && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
@@ -64,10 +63,13 @@ public class PlayRGBVideo implements Runnable{
 				}
 		
 				label = new JLabel(new ImageIcon(img));
-				frame.pack();
-				frame.setVisible(true);
-				frame.getContentPane().add(label, BorderLayout.CENTER);
-				Thread.sleep(20);
+				
+				
+				this.contentPane.add( label, BorderLayout.CENTER );
+				this.contentPane.repaint();
+				this.contentPane.updateUI();
+				long et = System.currentTimeMillis();
+				Thread.sleep(38-(et-st) < 0 ? 0 : 38-(et-st));
 			}
 			is.close();
 		} catch (FileNotFoundException e) {

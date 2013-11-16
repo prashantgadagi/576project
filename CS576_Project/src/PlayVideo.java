@@ -1,17 +1,9 @@
 public class PlayVideo {
 	public static void main(String[] args) {
-
-		// get the command line parameters
-		if (args.length < 2) {
-			System.err.println("usage: java -jar PlayWaveFile.jar [filename]");
-			return;
-		}
+		//PlayAudio playAudio = new PlayAudio("D:\\576project\\extracted\\all_audio_files\\wreck2.wav");
+		//PlayRGBVideo playVideo = new PlayRGBVideo("D:\\576project\\extracted\\wreck2\\wreck2.rgb");
 		
-		PlayAudio playAudio = new PlayAudio(args[0]);
-		PlayRGBVideo playVideo = new PlayRGBVideo(args[1]);
-		
-		
-		new Thread(playVideo).start();
-		new Thread(playAudio).start();
+		//new Thread(playVideo).start();
+		//new Thread(playAudio).start();
 	}
 }
