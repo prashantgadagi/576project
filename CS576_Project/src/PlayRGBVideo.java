@@ -69,7 +69,7 @@ public class PlayRGBVideo implements Runnable{
 				this.contentPane.repaint();
 				this.contentPane.updateUI();
 				long et = System.currentTimeMillis();
-				Thread.sleep(38-(et-st) < 0 ? 0 : 38-(et-st));
+				Thread.sleep(40-(et-st) < 0 ? 0 : 40-(et-st));
 			}
 			is.close();
 		} catch (FileNotFoundException e) {
