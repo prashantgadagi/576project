@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 
-public class PlayRGBVideo implements Runnable{
+public class PlayRGBVideo extends Thread{
 	String file;
 	JPanel contentPane;
 	public PlayRGBVideo() {}
@@ -23,6 +23,7 @@ public class PlayRGBVideo implements Runnable{
 	
 	@Override
 	public void run() {
+		this.contentPane.removeAll();
 		int width = 352;
 		int height = 288;
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);

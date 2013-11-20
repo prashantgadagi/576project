@@ -2,7 +2,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-public class PlayAudio implements Runnable {
+public class PlayAudio extends Thread {
 	String filename;
 	
 	public PlayAudio() {}

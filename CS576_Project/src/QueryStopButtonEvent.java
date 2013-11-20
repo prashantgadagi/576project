@@ -8,21 +8,21 @@ import javax.swing.JPanel;
  * @author Prashant
  *	Stope the video from playing
  */
-public class StopButtonEvent extends MouseAdapter {
+public class QueryStopButtonEvent extends MouseAdapter {
 	JPanel panel;
 	
-	public StopButtonEvent(JPanel panel) {
+	public QueryStopButtonEvent(JPanel panel) {
 		this.panel = panel;
 	}
-	public StopButtonEvent() {}
+	public QueryStopButtonEvent() {}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public synchronized void mouseClicked(MouseEvent arg0) {
-		if(null != UI.audioThread) {
-			UI.audioThread.stop();
-			UI.videoThread.stop();
-			UI.videoPaused = false;
+		if(null != UI.queryAudioThread) {
+			UI.queryAudioThread.stop();
+			UI.queryVideoThread.stop();
+			UI.queryVideoPaused = false;
 			this.panel.removeAll();
 			this.panel.repaint();
 		}		
