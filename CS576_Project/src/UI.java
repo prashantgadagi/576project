@@ -9,7 +9,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
@@ -19,9 +18,9 @@ import javax.swing.border.EmptyBorder;
 public class UI extends JFrame {
 
 	public JPanel contentPane;
-	public JTextField textField;
+	public static JTextField textField;
 	public JPanel origVideo;
-	public JPanel queryVideo;
+	public JPanel queryVideoPanel;
 	public JButton queryVideoPlay;
 	public JButton queryVideoPause;
 	public JButton queryVideoStop;
@@ -31,6 +30,8 @@ public class UI extends JFrame {
 	public static boolean videoPaused;
 	public static Thread videoThread;
 	public static Thread audioThread;
+	public static String queryAudio;
+	public static String queryVideo;
 	
 
 	/**
@@ -42,10 +43,16 @@ public class UI extends JFrame {
 				try {
 					final UI frame = new UI();
 					frame.setVisible(true);
+					String audio = "D:\\576project\\extracted\\all_audio_files\\wreck2.wav";
+					String video = "D:\\576project\\extracted\\wreck2\\wreck2.rgb";
 					
-					frame.origVideoPlay.addMouseListener(new PlayButtonEvent(frame.origVideo));
+					frame.origVideoPlay.addMouseListener(new PlayButtonEvent(frame.origVideo, audio, video));
 					frame.origVideoPause.addMouseListener(new PauseButtonEvent());
 					frame.origVideoStop.addMouseListener(new StopButtonEvent(frame.origVideo));
+					
+					frame.queryVideoPlay.addMouseListener(new PlayButtonEvent(frame.queryVideoPanel, UI.queryAudio, UI.queryVideo));
+					frame.queryVideoPause.addMouseListener(new PauseButtonEvent());
+					frame.queryVideoStop.addMouseListener(new StopButtonEvent(frame.queryVideoPanel));
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -66,24 +73,26 @@ public class UI extends JFrame {
 		setContentPane(this.contentPane);
 		this.contentPane.setLayout(null);
 		
-		this.textField = new JTextField();
-		this.textField.setBounds(183, 44, 181, 20);
-		this.contentPane.add(textField);
-		this.textField.setColumns(10);
+		UI.textField = new JTextField();
+		UI.textField.setBounds(191, 44, 257, 20);
+		this.contentPane.add(UI.textField);
+		UI.textField.setColumns(10);
 		
 		JButton btnNewButton = new JButton("Browse");
 		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				JFileChooser fc = new JFileChooser();
+				fc.setCurrentDirectory(new File("D:\\576project\\extracted"));
 		        int res = fc.showOpenDialog(null);
 		        try {
 		            if (res == JFileChooser.APPROVE_OPTION) {
 		                File file = fc.getSelectedFile();
-		                System.out.println(file.getAbsolutePath());
-		            } 
-		            else {
-		                JOptionPane.showMessageDialog(null, "Select a file", "Aborting...", JOptionPane.WARNING_MESSAGE);
+		                String path = file.getAbsolutePath();
+		                UI.textField.setText(path);
+		                UI.queryVideo = path;
+		                String audioName = path.substring(path.indexOf("query\\query")+6,path.indexOf("query")+12);
+		                UI.queryAudio = "D:\\576project\\extracted\\all_audio_files\\"+audioName+".wav";
 		            }
 		        } 
 		        catch (Exception iOException) {
@@ -91,16 +100,16 @@ public class UI extends JFrame {
 		        }
 			}
 		});
-		btnNewButton.setBounds(96, 43, 77, 23);
+		btnNewButton.setBounds(96, 43, 85, 23);
 		this.contentPane.add(btnNewButton);
 		
 		this.origVideo = new JPanel();
 		this.origVideo.setBounds(604, 330, 352, 288);
 		this.contentPane.add(this.origVideo);
 		
-		this.queryVideo = new JPanel();
-		this.queryVideo.setBounds(96, 330, 352, 288);
-		this.contentPane.add(this.queryVideo);
+		this.queryVideoPanel = new JPanel();
+		this.queryVideoPanel.setBounds(96, 330, 352, 288);
+		this.contentPane.add(this.queryVideoPanel);
 		
 		JLabel lblQuery = new JLabel("Query");
 		lblQuery.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));

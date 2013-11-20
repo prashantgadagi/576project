@@ -15,10 +15,12 @@ public class StopButtonEvent extends MouseAdapter {
 	@SuppressWarnings("deprecation")
 	@Override
 	public synchronized void mouseClicked(MouseEvent arg0) {
-		UI.audioThread.stop();
-		UI.videoThread.stop();
-		UI.videoPaused = false;
-		this.panel.removeAll();
-		this.panel.repaint();
+		if(null != UI.audioThread) {
+			UI.audioThread.stop();
+			UI.videoThread.stop();
+			UI.videoPaused = false;
+			this.panel.removeAll();
+			this.panel.repaint();
+		}		
 	}
 }
