@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
@@ -59,6 +60,7 @@ public class UI extends JFrame {
 									  "D:\\576project\\extracted\\wreck2\\wreck2.rgb",
 									  "D:\\576project\\extracted\\wreck3\\wreck3.rgb",
 									  "D:\\576project\\extracted\\wreck4\\wreck4.rgb"};
+	
 	public Container contentPane;
 	public static JTextField textField;
 	public JPanel origVideoPanel;
@@ -230,5 +232,10 @@ public class UI extends JFrame {
 		this.origVideoStop = new JButton("Stop");
 		this.origVideoStop.setBounds(867, 640, 89, 23);
 		this.contentPane.add(this.origVideoStop);
+		
+		JSlider slider = new JSlider();
+		slider.setBorder(null);
+		slider.setBounds(604, 282, 352, 20);
+		contentPane.add(slider);
 	}
 }
