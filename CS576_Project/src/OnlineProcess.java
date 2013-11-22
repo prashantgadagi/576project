@@ -7,29 +7,37 @@ import java.util.ArrayList;
 
 public class OnlineProcess {
 	
-	static String QUERY_FILE = "C:\\Multimedia\\all_files\\query3.rgb";
+	static String QUERY_FILE = "C:\\Multimedia\\all_files\\query1.rgb";
 
 	public static void main(String[] args) {
 
-		ArrayList<Integer[]> queryHIntensityList = new ArrayList<Integer[]>();
-		ArrayList<ArrayList<Integer[]>> dbHIntensityList = new ArrayList<ArrayList<Integer[]>>();
-		ArrayList<Integer> errorPercentageList = new ArrayList<Integer>();
+		ArrayList<MatchParameters> queryParametersList = new ArrayList<MatchParameters>();
+		ArrayList<ArrayList<MatchParameters>> dbParametersList = new ArrayList<ArrayList<MatchParameters>>();
+		ArrayList<ArrayList<ErrorData>> errorPercentageList = new ArrayList<ArrayList<ErrorData>>();
 		
-		// Reading the hIntensity file and keeping in memory
-		getHIntensitiesFromFile(dbHIntensityList, Constants.HINTENSITY_FILE);
+		// Reading the Parameters file and keeping in memory
+		getHIntensitiesFromFile(dbParametersList, Constants.PARAMETERS_FILE);
 		
 		// Getting the hIntensity List of query video
-		Compute.getHIntensityList(queryHIntensityList, QUERY_FILE);
+		Compute.getParametersList(queryParametersList, QUERY_FILE);
 		
 		// Compare query and db
-		compare(dbHIntensityList, queryHIntensityList);
+		compare(dbParametersList, queryParametersList, errorPercentageList);
 		
+		for(int i = 0; i < errorPercentageList.size(); i++) { 
+			for(int j = 0; j < errorPercentageList.get(i).size(); j++) {
+				System.out.println("H: " + errorPercentageList.get(i).get(j).hError
+									+ "\tY: " + errorPercentageList.get(i).get(j).yError 
+									+ "\tStartIndex: " + errorPercentageList.get(i).get(j).startIndex);
+			}
+			System.out.println("============================");
+		}
 	}
 	
-	static void getHIntensitiesFromFile(ArrayList<ArrayList<Integer[]>> dbHIntensityList, String filePath) {
+	static void getHIntensitiesFromFile(ArrayList<ArrayList<MatchParameters>> dbParametersList, String filePath) {
 		BufferedReader br;
 		String line = "";
-		int i = 0, j = 0; 
+		int i = 0, j = 0, k = 0; 
 		
 		try {		
 			br = new BufferedReader(new FileReader(filePath));
@@ -38,18 +46,25 @@ public class OnlineProcess {
 				String[] splitHeading = line.split(",");
 				
 				if(splitHeading.length == 2) {
-					ArrayList<Integer[]> hIntensityList = new ArrayList<Integer[]>(); 
+					ArrayList<MatchParameters> videoParametersList = new ArrayList<MatchParameters>(); 
 					for(i = 0; i < Integer.parseInt(splitHeading[1]); i++) {
 						line = br.readLine();
 						String[] splitData = line.split(",");
 				
-						Integer[] hIntensity = new Integer[Constants.QUANTIZATION_FACTOR];
-						for(j = 0; j < Constants.QUANTIZATION_FACTOR; j++) {
-							hIntensity[j] = Integer.parseInt(splitData[j]);
+						MatchParameters matchParameters = new MatchParameters();
+						
+						// Getting the H values
+						for(j = 0; j < Constants.H_QUANTIZATION_FACTOR; j++) {
+							matchParameters.h[j] = Integer.parseInt(splitData[j]);
 						}
-						hIntensityList.add(hIntensity);
+						
+						// Getting the Y values
+						for(j = 0; j < Constants.Y_QUANTIZATION_FACTOR; j++) {
+							matchParameters.y[j] = Integer.parseInt(splitData[Constants.H_QUANTIZATION_FACTOR + j]);
+						}
+						videoParametersList.add(matchParameters);
 					}
-					dbHIntensityList.add(hIntensityList);
+					dbParametersList.add(videoParametersList);
 				}
 				
 				line = br.readLine();
@@ -63,41 +78,58 @@ public class OnlineProcess {
 		} 
 	}
 	
-	static void compare(ArrayList<ArrayList<Integer[]>>dbHIntensityList, ArrayList<Integer[]> queryHIntensityList) {
+	static void compare(ArrayList<ArrayList<MatchParameters>> dbParametersList, ArrayList<MatchParameters> queryParametersList, ArrayList<ArrayList<ErrorData>> errorPercentageList) {
 		
-		int dbFilesIndex = 0, dbFramesIndex = 0, queryFramesIndex = 0, hIntensityIndex = 0;
+		int dbFilesIndex = 0, dbFramesIndex = 0, queryFramesIndex = 0, hIndex = 0, yIndex = 0;
 		
 		// Iterating through the db video files
-		for(dbFilesIndex = 0; dbFilesIndex < dbHIntensityList.size(); dbFilesIndex++) {
-			float errorPercentage = 100; 
-			int bestMatchStartIndex = 0;
+		for(dbFilesIndex = 0; dbFilesIndex < dbParametersList.size(); dbFilesIndex++) {
 			
+			ArrayList<ErrorData> fileErrorData = new ArrayList<ErrorData>(); 
 			// Iterating through the frames of the db video file
-			for(dbFramesIndex = 0; dbFramesIndex < dbHIntensityList.get(dbFilesIndex).size() - queryHIntensityList.size(); dbFramesIndex++) {
+			for(dbFramesIndex = 0; dbFramesIndex < dbParametersList.get(dbFilesIndex).size() - queryParametersList.size() + 1; dbFramesIndex++) {
+				
+				float hQueryWindowError = 0, yQueryWindowError = 0;
+				ErrorData queryWindowErrorData = new ErrorData();
 				
 				// Iterating through the query frames
-				for(queryFramesIndex = 0; queryFramesIndex < queryHIntensityList.size(); queryFramesIndex++) {
+				for(queryFramesIndex = 0; queryFramesIndex < queryParametersList.size(); queryFramesIndex++) {
 					
-					float error = 0;
-					// Iterating through the HIntensites in each frame
-					for(hIntensityIndex = 0; hIntensityIndex < Constants.QUANTIZATION_FACTOR; hIntensityIndex++) {
-						 
+					float hFrameError = 0, yFrameError = 0;
+		
+					// Iterating through the H parameter
+					for(hIndex = 0; hIndex < Constants.H_QUANTIZATION_FACTOR; hIndex++) {
 						// Comparing the corresponding frame in query with the DB
-						error += Math.abs((dbHIntensityList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex)[hIntensityIndex]
-													- queryHIntensityList.get(queryFramesIndex)[hIntensityIndex]) / Constants.QUANTIZATION_FACTOR);
-						//System.out.println(dbHIntensityList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex)[hIntensityIndex]
-						//		+ " ============ " + queryHIntensityList.get(queryFramesIndex)[hIntensityIndex]);
+						hFrameError += Math.abs((dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex).h[hIndex]
+													- queryParametersList.get(queryFramesIndex).h[hIndex]));
 					}
-					error = (error / Constants.QUANTIZATION_FACTOR) * 100;
+					hFrameError = (hFrameError / (2 * Constants.WIDTH * Constants.HEIGHT));
 					
-					// Checking if, with the current starting point the error is less
-					if(error < errorPercentage) {
-						bestMatchStartIndex = dbFramesIndex;
-						errorPercentage = error;
+					// Adding to the query window error
+					hQueryWindowError += hFrameError;
+					
+					// Iterating through the Y parameter
+					for(yIndex = 0; yIndex < Constants.Y_QUANTIZATION_FACTOR; yIndex++) {	 
+						// Comparing the corresponding frame in query with the DB
+						yFrameError += Math.abs(dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex).y[yIndex]
+								- queryParametersList.get(queryFramesIndex).y[yIndex]);
 					}
+					yFrameError = (yFrameError / (2 * Constants.WIDTH * Constants.HEIGHT));
+					
+					if(yFrameError > 1) {
+						//System.out.println("Yframe: " + yFrameError);
+					}
+					
+					// Adding to the query window error
+					yQueryWindowError += yFrameError;
 				}
+				
+				queryWindowErrorData.hError = (hQueryWindowError / queryParametersList.size()) * 100;
+				queryWindowErrorData.yError = (yQueryWindowError / queryParametersList.size()) * 100;
+				queryWindowErrorData.startIndex = dbFramesIndex;
+				fileErrorData.add(queryWindowErrorData);
 			}
-			System.out.println("Error%: " + errorPercentage + " Video: " + dbFilesIndex + " Best match Start Index: " + bestMatchStartIndex);
+			errorPercentageList.add(fileErrorData);
 		}
 	}
 }
