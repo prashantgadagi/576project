@@ -44,6 +44,8 @@ public class Compute {
 						rgbTohsv(r, g, b, hsv);
 						if(hsv[0] >= 0)
 							matchParameters.h[hsv[0]]++;
+						else 
+							matchParameters.h[Constants.H_QUANTIZATION_FACTOR - 1]++;
 						
 						// Getting the YUV values and saving the Y
 						int[] yuv = new int[3];

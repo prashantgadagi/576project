@@ -8,9 +8,9 @@ public class Constants {
 	//										"talk1", "talk2", "talk3", "talk4",
 	//										"wreck1", "wreck2", "wreck3", "wreck4" 
 	//									};
-	static final String[] FILE_NAMES = { "soccer3", "soccer2", "soccer1", "soccer4"};
-	//static final String[] FILE_NAMES = { "soccer3"};
-	static final int H_QUANTIZATION_FACTOR = 360;
+	//static final String[] FILE_NAMES = { "soccer3", "soccer2", "soccer1", "soccer4"};
+	static final String[] FILE_NAMES = { "soccer3"};
+	static final int H_QUANTIZATION_FACTOR = 360 + 1;
 	static final int Y_QUANTIZATION_FACTOR = 256;
 	static final int WIDTH = 352;
 	static final int HEIGHT = 288;

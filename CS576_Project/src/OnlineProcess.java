@@ -14,6 +14,7 @@ public class OnlineProcess {
 		ArrayList<MatchParameters> queryParametersList = new ArrayList<MatchParameters>();
 		ArrayList<ArrayList<MatchParameters>> dbParametersList = new ArrayList<ArrayList<MatchParameters>>();
 		ArrayList<ArrayList<ErrorData>> errorPercentageList = new ArrayList<ArrayList<ErrorData>>();
+		ArrayList<ErrorData> rankList = new ArrayList<ErrorData>();
 		
 		// Reading the Parameters file and keeping in memory
 		getHIntensitiesFromFile(dbParametersList, Constants.PARAMETERS_FILE);
@@ -22,22 +23,46 @@ public class OnlineProcess {
 		Compute.getParametersList(queryParametersList, QUERY_FILE);
 		
 		// Compare query and db
-		compare(dbParametersList, queryParametersList, errorPercentageList);
+		compare(dbParametersList, queryParametersList, errorPercentageList, rankList);
 		
-		for(int i = 0; i < errorPercentageList.size(); i++) { 
+		/*for(int i = 0; i < errorPercentageList.size(); i++) { 
 			for(int j = 0; j < errorPercentageList.get(i).size(); j++) {
 				System.out.println("H: " + errorPercentageList.get(i).get(j).hError
 									+ "\tY: " + errorPercentageList.get(i).get(j).yError 
 									+ "\tStartIndex: " + errorPercentageList.get(i).get(j).startIndex);
 			}
 			System.out.println("============================");
+		}*/
+		sort(rankList);
+		for(int i = 0; i < Constants.FILE_NAMES.length; i++) {
+			float avg = (2 * rankList.get(i).hError + rankList.get(i).yError) / 2;
+			System.out.println("Video: " + Constants.FILE_NAMES[rankList.get(i).videoIndex] 
+					+ " \tHError: " + rankList.get(i).hError 
+					+ " \tYError: " + rankList.get(i).yError 
+					+ " \tIndex: " + rankList.get(i).startIndex
+					+ " \tAvg: " +  avg);
 		}
+	}
+	
+	
+	static void sort(ArrayList<ErrorData> rankList) {
+		for(int i = 0; i < rankList.size(); i++) {
+			for(int j = 0; j < rankList.size(); j++) {
+				if(rankList.get(i).hError < rankList.get(j).hError) {
+					ErrorData edTemp = new ErrorData(rankList.get(i).hError, 
+										rankList.get(i).yError, rankList.get(i).startIndex, rankList.get(i).videoIndex);
+					rankList.get(i).Copy(rankList.get(j));
+					rankList.get(j).Copy(edTemp);
+				}
+			}
+		}
+		
 	}
 	
 	static void getHIntensitiesFromFile(ArrayList<ArrayList<MatchParameters>> dbParametersList, String filePath) {
 		BufferedReader br;
 		String line = "";
-		int i = 0, j = 0, k = 0; 
+		int i = 0, j = 0; 
 		
 		try {		
 			br = new BufferedReader(new FileReader(filePath));
@@ -78,9 +103,17 @@ public class OnlineProcess {
 		} 
 	}
 	
-	static void compare(ArrayList<ArrayList<MatchParameters>> dbParametersList, ArrayList<MatchParameters> queryParametersList, ArrayList<ArrayList<ErrorData>> errorPercentageList) {
+	static void compare(ArrayList<ArrayList<MatchParameters>> dbParametersList, ArrayList<MatchParameters> queryParametersList, 
+			ArrayList<ArrayList<ErrorData>> errorPercentageList, ArrayList<ErrorData> rankList) {
 		
 		int dbFilesIndex = 0, dbFramesIndex = 0, queryFramesIndex = 0, hIndex = 0, yIndex = 0;
+		
+		// Initilizing the rankList
+		for(int i = 0; i < Constants.FILE_NAMES.length; i++) {
+			ErrorData ed = new ErrorData();
+			ed.hError = Integer.MAX_VALUE;
+			rankList.add(ed);
+		}
 		
 		// Iterating through the db video files
 		for(dbFilesIndex = 0; dbFilesIndex < dbParametersList.size(); dbFilesIndex++) {
@@ -100,10 +133,13 @@ public class OnlineProcess {
 					// Iterating through the H parameter
 					for(hIndex = 0; hIndex < Constants.H_QUANTIZATION_FACTOR; hIndex++) {
 						// Comparing the corresponding frame in query with the DB
-						hFrameError += Math.abs((dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex).h[hIndex]
-													- queryParametersList.get(queryFramesIndex).h[hIndex]));
+						hFrameError += ((Math.abs(dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex).h[hIndex]
+										- queryParametersList.get(queryFramesIndex).h[hIndex]) * 1.0) 
+										/ (Constants.HEIGHT * Constants.WIDTH)); 
 					}
-					hFrameError = (hFrameError / (2 * Constants.WIDTH * Constants.HEIGHT));
+					//hFrameError = (hFrameError);// / (Constants.H_QUANTIZATION_FACTOR)); 
+					//hFrameError = klDivergence(dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex), queryParametersList.get(queryFramesIndex), 1);
+					
 					
 					// Adding to the query window error
 					hQueryWindowError += hFrameError;
@@ -111,25 +147,51 @@ public class OnlineProcess {
 					// Iterating through the Y parameter
 					for(yIndex = 0; yIndex < Constants.Y_QUANTIZATION_FACTOR; yIndex++) {	 
 						// Comparing the corresponding frame in query with the DB
-						yFrameError += Math.abs(dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex).y[yIndex]
-								- queryParametersList.get(queryFramesIndex).y[yIndex]);
+						yFrameError += ((Math.abs(dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex).y[yIndex]
+										- queryParametersList.get(queryFramesIndex).y[yIndex]) * 1.0)  
+										/ (Constants.HEIGHT * Constants.WIDTH));
 					}
-					yFrameError = (yFrameError / (2 * Constants.WIDTH * Constants.HEIGHT));
-					
-					if(yFrameError > 1) {
-						//System.out.println("Yframe: " + yFrameError);
-					}
+					//yFrameError = (yFrameError);// / ((2 * Constants.HEIGHT * Constants.WIDTH))); 
+					//yFrameError = klDivergence(dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex), queryParametersList.get(queryFramesIndex), 2);
 					
 					// Adding to the query window error
 					yQueryWindowError += yFrameError;
 				}
 				
-				queryWindowErrorData.hError = (hQueryWindowError / queryParametersList.size()) * 100;
-				queryWindowErrorData.yError = (yQueryWindowError / queryParametersList.size()) * 100;
+				queryWindowErrorData.hError = (hQueryWindowError / (queryParametersList.size())) * 100;
+				queryWindowErrorData.yError = (yQueryWindowError / (queryParametersList.size())) * 100;
 				queryWindowErrorData.startIndex = dbFramesIndex;
+				queryWindowErrorData.videoIndex = dbFilesIndex;
 				fileErrorData.add(queryWindowErrorData);
+				
+				if(rankList.get(dbFilesIndex).hError > queryWindowErrorData.hError) {
+					rankList.get(dbFilesIndex).Copy(queryWindowErrorData);
+				}
 			}
 			errorPercentageList.add(fileErrorData);
 		}
 	}
+	
+	public static float klDivergence(MatchParameters p1, MatchParameters p2, int flag) {
+
+	      float klDiv = 0;
+
+	      if( flag == 1) {
+		      for (int i = 0; i < p1.h.length; ++i) {
+		        if (p1.h[i] == 0) { continue; }
+		        if (p2.h[i] == 0) { continue; } // Limin
+	
+		        klDiv += (p1.h[i]*1.0 / (Constants.HEIGHT * Constants.WIDTH)) * Math.log( (p1.h[i]*1.0 / (Constants.HEIGHT * Constants.WIDTH)) / (p2.h[i]*1.0 / (Constants.HEIGHT * Constants.WIDTH)) );
+		      }
+	      } else {
+		      for (int i = 0; i < p1.y.length; ++i) {
+		        if (p1.y[i] == 0) { continue; }
+		        if (p2.y[i] == 0) { continue; } // Limin
+	
+		        klDiv += (p1.y[i] * 1.0 / (Constants.HEIGHT * Constants.WIDTH)) * Math.log( (p1.y[i] * 1.0 / (Constants.HEIGHT * Constants.WIDTH)) / (p2.y[i] * 1.0 / (Constants.HEIGHT * Constants.WIDTH)) );
+	      }
+	      }
+
+	      return (float) (klDiv / Math.log(2)); // moved this division out of the loop -DM
+	    }
 }
