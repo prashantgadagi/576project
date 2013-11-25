@@ -167,10 +167,10 @@ public class OnlineProcess extends Thread{
 					// Iterating through the H parameter
 					for(hIndex = 0; hIndex < Constants.H_QUANTIZATION_FACTOR; hIndex++) {
 						// Comparing the corresponding frame in query with the DB
-						hFrameError += Math.abs((dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex).h[hIndex]
-													- queryParametersList.get(queryFramesIndex).h[hIndex]));
+						hFrameError += (Math.abs(dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex).h[hIndex]
+													- queryParametersList.get(queryFramesIndex).h[hIndex]) * 1.0 / (Constants.WIDTH * Constants.HEIGHT));
 					}
-					hFrameError = (hFrameError / (2 * Constants.WIDTH * Constants.HEIGHT));
+					//hFrameError = (hFrameError / (2 * Constants.WIDTH * Constants.HEIGHT));
 					
 					// Adding to the query window error
 					hQueryWindowError += hFrameError;
@@ -178,14 +178,10 @@ public class OnlineProcess extends Thread{
 					// Iterating through the Y parameter
 					for(yIndex = 0; yIndex < Constants.Y_QUANTIZATION_FACTOR; yIndex++) {	 
 						// Comparing the corresponding frame in query with the DB
-						yFrameError += Math.abs(dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex).y[yIndex]
-								- queryParametersList.get(queryFramesIndex).y[yIndex]);
+						yFrameError += (Math.abs(dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex).y[yIndex]
+								- queryParametersList.get(queryFramesIndex).y[yIndex]) * 1.0 / (Constants.WIDTH * Constants.HEIGHT));
 					}
-					yFrameError = (yFrameError / (2 * Constants.WIDTH * Constants.HEIGHT));
-					
-					if(yFrameError > 1) {
-						//System.out.println("Yframe: " + yFrameError);
-					}
+					//yFrameError = (yFrameError / (2 * Constants.WIDTH * Constants.HEIGHT));
 					
 					// Adding to the query window error
 					yQueryWindowError += yFrameError;
