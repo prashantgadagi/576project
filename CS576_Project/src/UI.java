@@ -23,9 +23,9 @@ import javax.swing.event.ListSelectionListener;
 
 @SuppressWarnings("serial")
 public class UI extends JFrame {
-	static String[] videoFileNames = new String[12];
-	static String[] videoFileValues = new String[12];
-	static String[] audioFileValues = new String[12];
+	static String[] videoFileNames = new String[Constants.NO_OF_FILES];
+	static String[] videoFileValues = new String[Constants.NO_OF_FILES];
+	static String[] audioFileValues = new String[Constants.NO_OF_FILES];
 	
 	public Container contentPane;
 	public static JTextField textField;
@@ -93,15 +93,16 @@ public class UI extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				JFileChooser fc = new JFileChooser();
-				fc.setCurrentDirectory(new File("D:\\576project\\extracted\\query"));
+				fc.setCurrentDirectory(new File(Constants.BASE_PATH));
 		        int res = fc.showOpenDialog(null);
 		        try {
 		            if (res == JFileChooser.APPROVE_OPTION) {
 		                File file = fc.getSelectedFile();
 		                String queryVideo = file.getAbsolutePath();
 		                UI.textField.setText(queryVideo);
-		                String audioName = queryVideo.substring(queryVideo.indexOf("query\\query")+6,queryVideo.indexOf("query")+12);
-		                String queryAudio = "D:\\576project\\extracted\\all_audio_files\\"+audioName+".wav";
+		                String audioName = queryVideo.substring(queryVideo.indexOf("query"),queryVideo.indexOf("query")+6);
+		                System.out.println(audioName);
+		                String queryAudio = Constants.BASE_PATH+audioName+".wav";
 		                
 		                UI.queryAudioFileName = queryAudio;
 		                UI.queryVideoFileName = queryVideo;

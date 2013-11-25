@@ -17,4 +17,5 @@ public class Constants {
 	static final int MB_SIZE = 8;
 	static final int P = 16;
 	static final boolean motion = false;
+	static final int NO_OF_FILES = 12;
 }
