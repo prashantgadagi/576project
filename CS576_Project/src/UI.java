@@ -4,6 +4,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -22,44 +23,9 @@ import javax.swing.event.ListSelectionListener;
 
 @SuppressWarnings("serial")
 public class UI extends JFrame {
-	String[] videoFileNames = { "Soccer 1", 
-								"Soccer 2", 
-								"Soccer 3", 
-								"Soccer 4", 
-								"Talk 1",
-								"Talk 2",
-								"Talk 3",
-								"Talk 4",
-								"Wreck 1",
-								"Wreck 2",
-								"Wreck 3",
-								"Wreck 4"};
-	
-	final String[] audioFileValues = {"D:\\576project\\extracted\\all_audio_files\\soccer1.wav",
-									  "D:\\576project\\extracted\\all_audio_files\\soccer2.wav",
-									  "D:\\576project\\extracted\\all_audio_files\\soccer3.wav",
-									  "D:\\576project\\extracted\\all_audio_files\\soccer4.wav",
-									  "D:\\576project\\extracted\\all_audio_files\\talk1.wav",
-									  "D:\\576project\\extracted\\all_audio_files\\talk2.wav",
-									  "D:\\576project\\extracted\\all_audio_files\\talk3.wav",
-									  "D:\\576project\\extracted\\all_audio_files\\talk4.wav",
-									  "D:\\576project\\extracted\\all_audio_files\\wreck1.wav",
-									  "D:\\576project\\extracted\\all_audio_files\\wreck2.wav",
-									  "D:\\576project\\extracted\\all_audio_files\\wreck3.wav",
-									  "D:\\576project\\extracted\\all_audio_files\\wreck4.wav"};
-	
-	final String[] videoFileValues = {"D:\\576project\\extracted\\soccer1\\soccer1.rgb",
-									  "D:\\576project\\extracted\\soccer2\\soccer2.rgb",
-									  "D:\\576project\\extracted\\soccer3\\soccer3.rgb",
-									  "D:\\576project\\extracted\\soccer4\\soccer4.rgb",
-									  "D:\\576project\\extracted\\talk1\\talk1.rgb",
-									  "D:\\576project\\extracted\\talk2\\talk2.rgb",
-									  "D:\\576project\\extracted\\talk3\\talk3.rgb",
-									  "D:\\576project\\extracted\\talk4\\talk4.rgb",
-									  "D:\\576project\\extracted\\wreck1\\wreck1.rgb",
-									  "D:\\576project\\extracted\\wreck2\\wreck2.rgb",
-									  "D:\\576project\\extracted\\wreck3\\wreck3.rgb",
-									  "D:\\576project\\extracted\\wreck4\\wreck4.rgb"};
+	static String[] videoFileNames = new String[12];
+	static String[] videoFileValues = new String[12];
+	static String[] audioFileValues = new String[12];
 	
 	public Container contentPane;
 	public static JTextField textField;
@@ -78,6 +44,8 @@ public class UI extends JFrame {
 	public static PlayRGBVideo queryVideoThread;
 	public static PlayAudio queryAudioThread;
 	private JScrollPane scrollPane;
+	@SuppressWarnings("rawtypes")
+	public static DefaultListModel model;
 	
 	public static QueryPlayButtonEvent queryPlay;
 	public static QueryPauseButtonEvent queryPause;
@@ -104,6 +72,7 @@ public class UI extends JFrame {
 	/**
 	 * Create the frame.
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public UI() {
 		
 		setResizable(false);
@@ -181,29 +150,31 @@ public class UI extends JFrame {
 		scrollPane.setBounds(604, 46, 352, 159);
 		contentPane.add(scrollPane);
 		
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final JList list = new JList(videoFileNames);
+		model = new DefaultListModel();
+		final JList list = new JList(model);
 		scrollPane.setViewportView(list);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent arg0) {
 				if(!list.getValueIsAdjusting()) {
-					UI.audioFileName = audioFileValues[list.getSelectedIndex()];
-					UI.videoFileName = videoFileValues[list.getSelectedIndex()];
-					
-					if(UI.stop != null) {
-		                UI.stop.mouseClicked(null);
-					}
-		                
-					if (UI.play == null) {
-						UI.play = new PlayButtonEvent(origVideoPanel);
-						UI.pause = new PauseButtonEvent();
-						UI.stop = new StopButtonEvent(origVideoPanel);
+					if(list.isSelectedIndex(list.getSelectedIndex())) {
+						UI.audioFileName = audioFileValues[list.getSelectedIndex()];
+						UI.videoFileName = videoFileValues[list.getSelectedIndex()];
+						
+						if(UI.stop != null) {
+			                UI.stop.mouseClicked(null);
+						}
+			                
+						if (UI.play == null) {
+							UI.play = new PlayButtonEvent(origVideoPanel);
+							UI.pause = new PauseButtonEvent();
+							UI.stop = new StopButtonEvent(origVideoPanel);
 
-						origVideoPlay.addMouseListener(UI.play);
-						origVideoPause.addMouseListener(UI.pause);
-						origVideoStop.addMouseListener(UI.stop);
+							origVideoPlay.addMouseListener(UI.play);
+							origVideoPause.addMouseListener(UI.pause);
+							origVideoStop.addMouseListener(UI.stop);
+						}
 					}
 				}
 			}
@@ -237,5 +208,18 @@ public class UI extends JFrame {
 		slider.setBorder(null);
 		slider.setBounds(604, 282, 352, 20);
 		contentPane.add(slider);
+		
+		JButton btnSearch = new JButton("Search");
+		btnSearch.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if(null != UI.textField && !"".equals(UI.textField.getText())) {
+					OnlineProcess op = new OnlineProcess(UI.textField.getText());
+					op.run();
+				}
+			}
+		});
+		btnSearch.setBounds(96, 96, 85, 23);
+		contentPane.add(btnSearch);
 	}
 }

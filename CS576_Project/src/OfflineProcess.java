@@ -3,8 +3,6 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
-
-
 public class OfflineProcess {
 	
 	public static void main(String[] args) {
@@ -38,7 +36,6 @@ public class OfflineProcess {
 		fileWriter.close();
 	}
 	
-	
 	static void writeHIntensityToFile(ArrayList<MatchParameters> frameParametersList, String fileName, PrintWriter fileWriter) {
 		int i = 0, j = 0;
 		
@@ -62,8 +59,13 @@ public class OfflineProcess {
 				else
 					fileWriter.print(frameParametersList.get(i).y[j]);
 			}
+			
+			if(Constants.motion) {
+				fileWriter.print(",");
+				fileWriter.print(frameParametersList.get(i).motion);
+			}
+			
 			fileWriter.println();
 		}
 	}
-
 }

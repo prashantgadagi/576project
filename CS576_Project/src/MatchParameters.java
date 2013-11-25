@@ -2,6 +2,7 @@
 public class MatchParameters {
 	Integer h[];
 	Integer y[];
+	double motion;
 	
 	public MatchParameters() {
 		int i = 0;
