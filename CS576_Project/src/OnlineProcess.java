@@ -29,7 +29,7 @@ public class OnlineProcess extends Thread{
 		// Compare query and db
 		compare(dbParametersList, queryParametersList, errorPercentageList, rankList);
 		
-		/*for(int i = 0; i < errorPercentageList.size(); i++) { 
+		for(int i = 0; i < errorPercentageList.size(); i++) { 
 			for(int j = 0; j < errorPercentageList.get(i).size(); j++) {
 				System.out.println("H: " + errorPercentageList.get(i).get(j).hError
 									+ "\tY: " + errorPercentageList.get(i).get(j).yError
@@ -37,7 +37,7 @@ public class OnlineProcess extends Thread{
 									+ "\tStartIndex: " + errorPercentageList.get(i).get(j).startIndex);
 			}
 			System.out.println("============================");
-		}*/
+		}
 		
 		UI.model.removeAllElements();
 		sort(rankList);
@@ -128,6 +128,7 @@ public class OnlineProcess extends Thread{
 						
 						videoParametersList.add(matchParameters);
 					}
+					//System.out.println("=======================================");
 					dbParametersList.add(videoParametersList);
 				}
 				
@@ -145,7 +146,7 @@ public class OnlineProcess extends Thread{
 	static void compare(ArrayList<ArrayList<MatchParameters>> dbParametersList, ArrayList<MatchParameters> queryParametersList, 
 			ArrayList<ArrayList<ErrorData>> errorPercentageList, ArrayList<ErrorData> rankList) {
 		
-		int dbFilesIndex = 0, dbFramesIndex = 0, queryFramesIndex = 0, hIndex = 0, yIndex = 0;
+		int dbFilesIndex = 0, dbFramesIndex = 0, queryFramesIndex = 0, hIndex = 0, yIndex = 0, mIndex = 0;
 		
 		// Initilizing the rankList
 		for(int i = 0; i < Constants.FILE_NAMES.length; i++) {
@@ -195,11 +196,11 @@ public class OnlineProcess extends Thread{
 
 					//Comparing motion error
 					if(Constants.motion) {
-						if((dbFramesIndex < dbParametersList.size() - 1) && (queryFramesIndex < queryParametersList.size()  - 1)) {
-							for(yIndex = 0; yIndex < Constants.NO_OF_MOTION_VECTORS; yIndex++) {	 
+						if((dbFramesIndex < dbParametersList.get(dbFilesIndex).size() - 1) && (queryFramesIndex < queryParametersList.size()  - 1)) {
+							for(mIndex = 0; mIndex < Constants.NO_OF_MOTION_VECTORS; mIndex++) {	 
 								// Comparing the corresponding frame in query with the DB
-								motionError += (Math.abs(dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex).motion[yIndex]
-										- queryParametersList.get(queryFramesIndex).motion[yIndex]));
+								motionError += (Math.abs(dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex).motion[mIndex]
+										- queryParametersList.get(queryFramesIndex).motion[mIndex]));
 							}
 						}
 						mQueryWindowError += motionError;
@@ -209,7 +210,7 @@ public class OnlineProcess extends Thread{
 				queryWindowErrorData.hError = (hQueryWindowError / queryParametersList.size()) * 100;
 				queryWindowErrorData.yError = (yQueryWindowError / queryParametersList.size()) * 100;
 				if(Constants.motion) {
-					queryWindowErrorData.mError = (mQueryWindowError / (queryParametersList.size()-1)) * 100;
+					queryWindowErrorData.mError = ((mQueryWindowError*1.0f) / (queryParametersList.size()-1)) * 100;
 				}
 				queryWindowErrorData.startIndex = dbFramesIndex;
 				queryWindowErrorData.videoIndex = dbFilesIndex;
