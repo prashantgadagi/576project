@@ -46,6 +46,7 @@ public class UI extends JFrame {
 	private JScrollPane scrollPane;
 	@SuppressWarnings("rawtypes")
 	public static DefaultListModel model;
+	public static JSlider slider;
 	
 	public static QueryPlayButtonEvent queryPlay;
 	public static QueryPauseButtonEvent queryPause;
@@ -205,9 +206,10 @@ public class UI extends JFrame {
 		this.origVideoStop.setBounds(867, 640, 89, 23);
 		this.contentPane.add(this.origVideoStop);
 		
-		JSlider slider = new JSlider();
+		slider = new JSlider();
 		slider.setBorder(null);
 		slider.setBounds(604, 282, 352, 20);
+		slider.setValue(0);
 		contentPane.add(slider);
 		
 		JButton btnSearch = new JButton("Search");

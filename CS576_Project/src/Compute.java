@@ -3,6 +3,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +46,9 @@ public class Compute {
 						// Getting the HSV values and saving the H
 						int[] hsv = new int[3];
 						rgbTohsv(r, g, b, hsv);
-						if (hsv[0] >= 0)
-							matchParameters.h[hsv[0]]++;
+						if (hsv[0] < 0)
+							hsv[0] = 0;
+						matchParameters.h[hsv[0]]++;
 
 						// Getting the YUV values and saving the Y
 						int[] yuv = new int[3];
@@ -63,10 +65,11 @@ public class Compute {
 			is.close();
 			if(Constants.motion) {
 				System.out.println("No of frames:"+frameParametersList.size());
-				List<Double> motionVectorList = Compute.getMotionVectors(filePath);
+				List<List<Double>> motionVectorList = Compute.getMotionVectors(filePath);
 				for(int i = 0; i < frameParametersList.size() - 1; i++) {
-					frameParametersList.get(i).motion = motionVectorList.get(i);
-					//System.out.println(motionVectorList.get(i));
+					for(int j = 0; j < motionVectorList.get(i).size(); j++) {
+						frameParametersList.get(i).motion[j] = motionVectorList.get(i).get(j);
+					}
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -125,65 +128,66 @@ public class Compute {
 		yuv[2] = (int) ((0.615 * red) + (-0.515 * green) + (-0.100 * blue));
 	}
 
-	public static List<Double> getMotionVectors(String filePath) throws FileNotFoundException {
-		List<int[][]> frameList = getFrameListAsIntArray(filePath);
-		List<Double> motionVectorList = new ArrayList<Double>();
+	public static List<List<Double>> getMotionVectors(String filePath) throws FileNotFoundException {
+		List<int[][]> frameList = getFrameListAsArray(filePath);
+		List<List<Double>> motionVectorList = new ArrayList<List<Double>>();
+		intializeCoordList();
 		for(int i = 0; i < frameList.size() - 1; i++) {
-			double mv = computeMotionVector(frameList.get(i), frameList.get(i+1));
+			List<Double> mv =  computeMotionVector(frameList.get(i), frameList.get(i+1));
 			motionVectorList.add(mv);
 		}
 		return motionVectorList;
 	}
 	
+	private static void intializeCoordList() {
+		Constants.coordList.add(new SearchCoords(83,67));
+		Constants.coordList.add(new SearchCoords(171,67));
+		Constants.coordList.add(new SearchCoords(259,67));
+		Constants.coordList.add(new SearchCoords(83,139));
+		Constants.coordList.add(new SearchCoords(171,139));
+		Constants.coordList.add(new SearchCoords(259,139));
+		Constants.coordList.add(new SearchCoords(83,211));
+		Constants.coordList.add(new SearchCoords(171,211));
+		Constants.coordList.add(new SearchCoords(259,211));		
+	}
+
 	/**
 	 * 
 	 * @param sourceImage
 	 * @param referenceImage
 	 * @return
 	 */
-	private static double computeMotionVector(int[][] sourceImage, int[][] referenceImage) {
-		int n = (Constants.WIDTH / Constants.MB_SIZE)*(Constants.HEIGHT / Constants.MB_SIZE);
-		double[] motionVectors = new double[n];
-		n = 0;
+	private static List<Double> computeMotionVector(int[][] sourceImage, int[][] referenceImage) {
+		List<Double> motionVectors = new ArrayList<Double>();
 		
-		for(int j = 0; j < Constants.HEIGHT; j += Constants.MB_SIZE) {
-			for(int i = 0; i < Constants.WIDTH; i += Constants.MB_SIZE) {
-				int startX = (i - Constants.P) < 0 ? 0 : (i - Constants.P);
-				int startY = (j - Constants.P) < 0 ? 0 : (j - Constants.P);
-				int endX = (i + Constants.MB_SIZE + Constants.P) > Constants.WIDTH  ? (Constants.WIDTH - Constants.MB_SIZE) : (i + Constants.P);
-				int endY = (j + Constants.MB_SIZE + Constants.P) > Constants.HEIGHT  ? (Constants.HEIGHT - Constants.MB_SIZE) : (j + Constants.P);
-				
-				double[] SAD = new double[(endX-startX) * (endY-startY)];
-				int c = 0;
-				
-				for (int y = startY; y < endY; y++) {
-					for (int x = startX; x < endX; x++) {
-						SAD[c++] = sumOfAbsouluteDifferences(i, j, x, y, sourceImage, referenceImage);
-					}
+		for(SearchCoords sc : Constants.coordList) {
+			int startX = sc.i - Constants.P;
+			int startY = sc.j - Constants.P;
+			int endX = sc.i + Constants.MB_SIZE + Constants.P;
+			int endY = sc.j + Constants.MB_SIZE + Constants.P;
+			
+			List<SAD> sadList = new ArrayList<SAD>();
+			
+			for (int y = startY; y < endY - (Constants.MB_SIZE); y++) {
+				for (int x = startX; x < (endX - Constants.MB_SIZE); x++) {
+					sadList.add(new SAD(sumOfAbsouluteDifferences(sc.i, sc.j, x, y, sourceImage, referenceImage),x,y));
 				}
-				
-				double minSAD = SAD[0];
-				//int minIndex = 0, minIndexX = 0, minIndexY = 0;
-				for (int x = 0; x < c; x++) {
-					if(SAD[x] < minSAD) {
-						minSAD = SAD[x];
-						//minIndex = x;
-					}
-				}
-				
-				//minIndexX = minIndex / (endY - startY);
-				//minIndexY = minIndex - ((endX - startX)*minIndexX) - 1;
-				
-				motionVectors[n++] = minSAD;
 			}
+			
+			SAD minSAD = sadList.get(0);
+			for(SAD s : sadList) {
+				if(s.SAD < minSAD.SAD) {
+					minSAD = s;
+				}
+			}
+			
+			motionVectors.add(euclideanDistance(sc.i+5, sc.j+5, minSAD.i+5, minSAD.j+5));
 		}
-		
-		double avg = 0;
-		for (int i = 0; i < n; i++) {
-			avg += motionVectors[i];
-		}
-		
-		return (avg/n);
+		return motionVectors;
+	}
+
+	private static double euclideanDistance(int i1, int j1, int i2, int j2) {
+		return Math.sqrt(Math.pow((i1-i2), 2) + Math.pow((j1-j2), 2));
 	}
 
 	/**
@@ -212,7 +216,7 @@ public class Compute {
 	 * @return List<Float[][]>
 	 * The frame list as a 2-dimensional Int array of H values per pixel  
 	 */
-	public static List<int[][]> getFrameListAsIntArray(String filePath) {
+	public static List<int[][]> getFrameListAsArray(String filePath) {
 		List<int[][]> frameList = new ArrayList<int[][]>();
 		
 		InputStream is;
@@ -244,7 +248,7 @@ public class Compute {
 						b = bytes[index + Constants.HEIGHT * Constants.WIDTH
 								* 2] & 0xff;
 						index++;
-						frame[x][y] = rgbTohsv(r, g, b);
+						frame[x][y] = rgbToyuv(r, g, b);
 					}
 				}
 				frameList.add(frame);
@@ -259,43 +263,7 @@ public class Compute {
 		return frameList;
 	}
 	
-	static int rgbTohsv(int red, int green, int blue) {
-		double max, min, r, g, b, h, s;
-
-		r = red / 255.0;
-		g = green / 255.0;
-		b = blue / 255.0;
-		h = 0;
-
-		max = Math.max(Math.max(r, g), b);
-		min = Math.min(Math.min(r, g), b);
-
-		if (max != 0.0)
-			s = (max - min) / max;
-		else
-			s = 0.0;
-
-		// Note: In theory, when saturation is 0, then
-		// hue is undefined, but for practical purposes
-		// we will leave the hue as it was.
-
-		if (s == 0.0) {
-			h = -1;
-		} else {
-			double delta = (max - min);
-
-			if (r == max)
-				h = (g - b) / delta;
-			else if (g == max)
-				h = 2.0 + (b - r) / delta;
-			else if (b == max)
-				h = 4.0 + (r - g) / delta;
-
-			h *= 60.0;
-			while (h < 0.0)
-				h += 360.0;
-		}
-
-		return (int) h;
+	static int rgbToyuv(int red, int green, int blue) {
+		return (int) ((0.299 * red) + (0.587 * green) + (0.114 * blue));
 	}
 }

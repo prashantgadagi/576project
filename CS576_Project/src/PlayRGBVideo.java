@@ -24,9 +24,7 @@ public class PlayRGBVideo extends Thread{
 	@Override
 	public void run() {
 		this.contentPane.removeAll();
-		int width = 352;
-		int height = 288;
-		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		BufferedImage img = new BufferedImage(Constants.WIDTH, Constants.HEIGHT, BufferedImage.TYPE_INT_RGB);
 
 		InputStream is;
 		
@@ -36,7 +34,7 @@ public class PlayRGBVideo extends Thread{
 			is = new FileInputStream(file);
 
 			long len = file.length();
-			long frameLength = width*height*3;
+			long frameLength = Constants.WIDTH*Constants.HEIGHT*3;
 			byte[] bytes = new byte[(int) frameLength];
 			int totalRead = 0;
 
@@ -50,11 +48,11 @@ public class PlayRGBVideo extends Thread{
 				}
 
 				int ind = 0;		
-				for (int y = 0; y < height; y++) {
-					for (int x = 0; x < width; x++) {
+				for (int y = 0; y < Constants.HEIGHT; y++) {
+					for (int x = 0; x < Constants.WIDTH; x++) {
 						int r = bytes[ind];
-						int g = bytes[ind + height * width];
-						int b = bytes[ind + height * width * 2];
+						int g = bytes[ind + Constants.HEIGHT * Constants.WIDTH];
+						int b = bytes[ind + Constants.HEIGHT * Constants.WIDTH * 2];
 						
 						int pix = 0xff000000 | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
 						
@@ -64,7 +62,6 @@ public class PlayRGBVideo extends Thread{
 				}
 		
 				label = new JLabel(new ImageIcon(img));
-				
 				
 				this.contentPane.add( label, BorderLayout.CENTER );
 				this.contentPane.repaint();

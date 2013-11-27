@@ -29,7 +29,7 @@ public class OnlineProcess extends Thread{
 		// Compare query and db
 		compare(dbParametersList, queryParametersList, errorPercentageList, rankList);
 		
-		/*for(int i = 0; i < errorPercentageList.size(); i++) { 
+		for(int i = 0; i < errorPercentageList.size(); i++) { 
 			for(int j = 0; j < errorPercentageList.get(i).size(); j++) {
 				System.out.println("H: " + errorPercentageList.get(i).get(j).hError
 									+ "\tY: " + errorPercentageList.get(i).get(j).yError
@@ -37,7 +37,7 @@ public class OnlineProcess extends Thread{
 									+ "\tStartIndex: " + errorPercentageList.get(i).get(j).startIndex);
 			}
 			System.out.println("============================");
-		}*/
+		}
 		
 		UI.model.removeAllElements();
 		sort(rankList);
@@ -100,7 +100,7 @@ public class OnlineProcess extends Thread{
 					for(i = 0; i < Integer.parseInt(splitHeading[1]); i++) {
 						line = br.readLine();
 						String[] splitData = line.split(",");
-				
+
 						MatchParameters matchParameters = new MatchParameters();
 						
 						// Getting the H values
@@ -116,7 +116,11 @@ public class OnlineProcess extends Thread{
 						
 						//Getting motion value
 						if(Constants.motion) {
-							matchParameters.motion = Double.parseDouble(splitData[splitData.length - 1]);
+							if(i < dbParametersList.size() - 1) {
+								for(j = 0; j < Constants.NO_OF_MOTION_VECTORS; j++) {
+									matchParameters.motion[j] = Double.parseDouble(splitData[Constants.H_QUANTIZATION_FACTOR+Constants.Y_QUANTIZATION_FACTOR+j]);
+								}
+							}
 						}
 						
 						videoParametersList.add(matchParameters);
@@ -188,9 +192,12 @@ public class OnlineProcess extends Thread{
 
 					//Comparing motion error
 					if(Constants.motion) {
-						if(queryFramesIndex < queryParametersList.size()  - 1) {
-							motionError = (float) Math.abs(dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex).motion
-									- queryParametersList.get(queryFramesIndex).motion);
+						if((dbFramesIndex < dbParametersList.size() - 1) && (queryFramesIndex < queryParametersList.size()  - 1)) {
+							for(yIndex = 0; yIndex < Constants.NO_OF_MOTION_VECTORS; yIndex++) {	 
+								// Comparing the corresponding frame in query with the DB
+								motionError += (Math.abs(dbParametersList.get(dbFilesIndex).get(dbFramesIndex + queryFramesIndex).motion[yIndex]
+										- queryParametersList.get(queryFramesIndex).motion[yIndex]));
+							}
 						}
 						mQueryWindowError += motionError;
 					}
@@ -199,7 +206,7 @@ public class OnlineProcess extends Thread{
 				queryWindowErrorData.hError = (hQueryWindowError / queryParametersList.size()) * 100;
 				queryWindowErrorData.yError = (yQueryWindowError / queryParametersList.size()) * 100;
 				if(Constants.motion) {
-					queryWindowErrorData.mError = (mQueryWindowError / (queryParametersList.size()-1));
+					queryWindowErrorData.mError = (mQueryWindowError / (queryParametersList.size()-1)) * 100;
 				}
 				queryWindowErrorData.startIndex = dbFramesIndex;
 				queryWindowErrorData.videoIndex = dbFilesIndex;

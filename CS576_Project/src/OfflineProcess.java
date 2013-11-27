@@ -61,10 +61,16 @@ public class OfflineProcess {
 			}
 			
 			if(Constants.motion) {
-				fileWriter.print(",");
-				fileWriter.print(frameParametersList.get(i).motion);
+				if(i < frameParametersList.size() - 1) {
+					fileWriter.print(",");
+					int size = frameParametersList.get(i).motion.length;
+					for(j = 0; j < size ; j++) {
+						fileWriter.print(frameParametersList.get(i).motion[j]);
+						if(j != size-1)
+							fileWriter.print(",");
+					}
+				}
 			}
-			
 			fileWriter.println();
 		}
 	}
