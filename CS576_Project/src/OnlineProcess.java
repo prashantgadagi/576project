@@ -29,7 +29,7 @@ public class OnlineProcess extends Thread{
 		// Compare query and db
 		compare(dbParametersList, queryParametersList, errorPercentageList, rankList);
 		
-		for(int i = 0; i < errorPercentageList.size(); i++) { 
+		/*for(int i = 0; i < errorPercentageList.size(); i++) { 
 			for(int j = 0; j < errorPercentageList.get(i).size(); j++) {
 				System.out.println("H: " + errorPercentageList.get(i).get(j).hError
 									+ "\tY: " + errorPercentageList.get(i).get(j).yError
@@ -37,7 +37,7 @@ public class OnlineProcess extends Thread{
 									+ "\tStartIndex: " + errorPercentageList.get(i).get(j).startIndex);
 			}
 			System.out.println("============================");
-		}
+		}*/
 		
 		UI.model.removeAllElements();
 		sort(rankList);
@@ -97,6 +97,7 @@ public class OnlineProcess extends Thread{
 				
 				if(splitHeading.length == 2) {
 					ArrayList<MatchParameters> videoParametersList = new ArrayList<MatchParameters>(); 
+					int noOfFrames = Integer.parseInt(splitHeading[1]);
 					for(i = 0; i < Integer.parseInt(splitHeading[1]); i++) {
 						line = br.readLine();
 						String[] splitData = line.split(",");
@@ -116,10 +117,12 @@ public class OnlineProcess extends Thread{
 						
 						//Getting motion value
 						if(Constants.motion) {
-							if(i < dbParametersList.size() - 1) {
+							if(i < noOfFrames - 1) {
 								for(j = 0; j < Constants.NO_OF_MOTION_VECTORS; j++) {
 									matchParameters.motion[j] = Double.parseDouble(splitData[Constants.H_QUANTIZATION_FACTOR+Constants.Y_QUANTIZATION_FACTOR+j]);
+									//System.out.print(matchParameters.motion[j] + ", ");
 								}
+								//System.out.println(" : " + i);
 							}
 						}
 						
