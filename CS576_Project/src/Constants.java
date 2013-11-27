@@ -23,6 +23,7 @@ public class Constants {
 	static final int NO_OF_FILES = 12;
 	public static final int MAX_INT = Integer.MAX_VALUE;
 	public static final int NO_OF_MOTION_VECTORS = 9;
+	public static boolean initialized = false;
 	
 	public static List<SearchCoords> coordList = new ArrayList<SearchCoords>();
 }

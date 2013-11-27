@@ -64,6 +64,11 @@ public class Compute {
 
 			is.close();
 			if(Constants.motion) {
+				if(!Constants.initialized) {
+					intializeCoordList();
+					Constants.initialized = true;
+				}
+				
 				System.out.println("No of frames:"+frameParametersList.size());
 				List<List<Double>> motionVectorList = Compute.getMotionVectors(filePath);
 				for(int i = 0; i < frameParametersList.size() - 1; i++) {
@@ -131,7 +136,6 @@ public class Compute {
 	public static List<List<Double>> getMotionVectors(String filePath) throws FileNotFoundException {
 		List<int[][]> frameList = getFrameListAsArray(filePath);
 		List<List<Double>> motionVectorList = new ArrayList<List<Double>>();
-		intializeCoordList();
 		for(int i = 0; i < frameList.size() - 1; i++) {
 			List<Double> mv =  computeMotionVector(frameList.get(i), frameList.get(i+1));
 			motionVectorList.add(mv);
