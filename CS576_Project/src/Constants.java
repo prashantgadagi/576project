@@ -24,6 +24,16 @@ public class Constants {
 	public static final int MAX_INT = Integer.MAX_VALUE;
 	public static final int NO_OF_MOTION_VECTORS = 9;
 	public static boolean initialized = false;
-	
+
 	public static List<SearchCoords> coordList = new ArrayList<SearchCoords>();
+	
+	/*
+	 * Sorting flag values based on different parameters
+	 * 1 - AVG(3*M + 2*H + 1*Y)
+	 * 2 - M
+	 * 3 - H
+	 * 4 - Y
+	 */
+	public static int SORT_FLAG = 1; 
+	
 }
