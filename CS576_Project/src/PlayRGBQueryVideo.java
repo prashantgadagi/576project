@@ -11,12 +11,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 
-public class PlayRGBVideo extends Thread{
+public class PlayRGBQueryVideo extends Thread{
 	String file;
 	JPanel contentPane;
-	public PlayRGBVideo() {}
+	public PlayRGBQueryVideo() {}
 	
-	public PlayRGBVideo(String file, JPanel contentPane) {
+	public PlayRGBQueryVideo(String file, JPanel contentPane) {
 		this.file = file;
 		this.contentPane = contentPane;
 	}
@@ -37,12 +37,7 @@ public class PlayRGBVideo extends Thread{
 			int frameLength = Constants.WIDTH*Constants.HEIGHT * 3;
 			byte[] bytes = new byte[frameLength];
 			int totalRead = 0;
-			int count = 0;
-			
-			int noOfframes = (int) (len / frameLength);
-			
-			UI.slider.setMaximum(noOfframes);
-			
+
 			while(totalRead < len) {
 				long st = System.currentTimeMillis();
 				int numRead = 0;
@@ -72,7 +67,6 @@ public class PlayRGBVideo extends Thread{
 				this.contentPane.repaint();
 				this.contentPane.updateUI();
 				long et = System.currentTimeMillis();
-				UI.slider.setValue(count++);
 				Thread.sleep(40-(et-st) < 0 ? 0 : 40-(et-st));
 			}
 			is.close();

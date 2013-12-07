@@ -17,7 +17,7 @@ public class QueryPlayButtonEvent extends MouseAdapter {
 		this.panel.repaint();
 		//Playing the video after stopping or for the first time
 		if(!UI.queryVideoPaused) {
-			UI.queryVideoThread = new PlayRGBVideo(UI.queryVideoFileName, this.panel);
+			UI.queryVideoThread = new PlayRGBQueryVideo(UI.queryVideoFileName, this.panel);
 			UI.queryAudioThread = new PlayAudio(UI.queryAudioFileName);
 			
 			try {

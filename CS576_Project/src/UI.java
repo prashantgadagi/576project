@@ -41,7 +41,7 @@ public class UI extends JFrame {
 	public static boolean queryVideoPaused;
 	public static PlayRGBVideo videoThread;
 	public static PlayAudio audioThread;
-	public static PlayRGBVideo queryVideoThread;
+	public static PlayRGBQueryVideo queryVideoThread;
 	public static PlayAudio queryAudioThread;
 	private JScrollPane scrollPane;
 	@SuppressWarnings("rawtypes")
@@ -149,11 +149,12 @@ public class UI extends JFrame {
 		this.contentPane.add(lblVideo);
 		
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(604, 46, 352, 159);
+		scrollPane.setBounds(604, 46, 352, 95);
 		contentPane.add(scrollPane);
 		
 		model = new DefaultListModel();
 		final JList list = new JList(model);
+		list.setVisibleRowCount(5);
 		scrollPane.setViewportView(list);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.addListSelectionListener(new ListSelectionListener() {
@@ -161,6 +162,7 @@ public class UI extends JFrame {
 			public void valueChanged(ListSelectionEvent arg0) {
 				if(!list.getValueIsAdjusting()) {
 					if(list.isSelectedIndex(list.getSelectedIndex())) {
+						UI.slider.setValue(0);
 						UI.audioFileName = audioFileValues[list.getSelectedIndex()];
 						UI.videoFileName = videoFileValues[list.getSelectedIndex()];
 						
@@ -207,9 +209,12 @@ public class UI extends JFrame {
 		this.contentPane.add(this.origVideoStop);
 		
 		slider = new JSlider();
+		slider.setPaintTicks(true);
 		slider.setBorder(null);
-		slider.setBounds(604, 282, 352, 20);
+		slider.setBounds(604, 273, 352, 31);
 		slider.setValue(0);
+		slider.setMajorTickSpacing(10);
+		slider.setMinorTickSpacing(2);
 		contentPane.add(slider);
 		
 		JButton btnSearch = new JButton("Search");
