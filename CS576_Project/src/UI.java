@@ -35,6 +35,10 @@ public class UI extends JFrame {
 	static String[] videoFileValues = new String[Constants.NO_OF_FILES];
 	static String[] audioFileValues = new String[Constants.NO_OF_FILES];
 	static float errorList[][] = new float[Constants.NO_OF_FILES][];
+	static int[] bestMatchArray = new int[Constants.NO_OF_FILES]; 
+	
+	public static float[] errorPercentageArray;
+	public static int bestMatchIndex;
 	
 	public Container contentPane;
 	public static JTextField textField;
@@ -70,7 +74,6 @@ public class UI extends JFrame {
 	public static String audioFileName;
 	public static String videoFileName;
 	
-	public static float[] errorPercentageArray;
 	public static JPanel histogramPanel;
 	
 
@@ -181,6 +184,8 @@ public class UI extends JFrame {
 						UI.videoFileName = videoFileValues[list.getSelectedIndex()];
 						
 						errorPercentageArray = errorList[list.getSelectedIndex()];
+						bestMatchIndex = bestMatchArray[list.getSelectedIndex()];
+						
 						if(UI.stop != null) {
 			                UI.stop.mouseClicked(null);
 						}
@@ -261,8 +266,8 @@ public class UI extends JFrame {
 			 return;
 		 int buffer = 10, maxValue = 100;
 		 int xOffset = 0, yOffset = 0, xPos = 0, yPos = 0;
-		 int width = UI.histogramPanel.getWidth() - 1;
-		 int height = UI.histogramPanel.getHeight() - 1;
+		 int width = UI.histogramPanel.getWidth();
+		 int height = UI.histogramPanel.getHeight();
 		 
 		 Graphics g = UI.histogramPanel.getGraphics();
 		 g.clearRect(0, 0, width, height);
@@ -285,10 +290,15 @@ public class UI extends JFrame {
 			     g2d.setColor(new Color(100, 100, 100));
 			     yPos = height + yOffset - barHeight;
 			     Rectangle2D bar = new Rectangle.Float(xPos, yPos, barWidth, barHeight);
+			    
 			     if(i == index)
 			    	 g2d.setColor(Color.GREEN);
-			     else 
-			    	 g2d.setColor(Color.BLUE);
+			     else {
+			    	 if(i == bestMatchIndex) 
+			    		 g2d.setColor(Color.RED);
+			    	 else
+			    		 g2d.setColor(Color.BLUE);
+			     }
 			     g2d.fill(bar);
 			     g2d.setColor(Color.DARK_GRAY);
 			     g2d.draw(bar);

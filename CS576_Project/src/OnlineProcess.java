@@ -52,6 +52,7 @@ public class OnlineProcess extends Thread{
 			UI.model.addElement(Constants.FILE_NAMES[rankList.get(i).videoIndex] + " - (starts at frame: "+ rankList.get(i).startIndex+" )");
 			UI.videoFileValues[i] = Constants.BASE_PATH+Constants.FILE_NAMES[rankList.get(i).videoIndex]+Constants.VIDEO_FILE_EXTENSION;
 			UI.audioFileValues[i] = Constants.BASE_PATH+Constants.FILE_NAMES[rankList.get(i).videoIndex]+Constants.AUDIO_FILE_EXTENSION;
+			UI.bestMatchArray[i] = rankList.get(i).startIndex;
 			
 			int noOfFrames = errorPercentageList.get(rankList.get(i).videoIndex).size();
 			int videoIndex = rankList.get(i).videoIndex;
