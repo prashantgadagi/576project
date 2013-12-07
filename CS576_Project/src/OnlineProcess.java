@@ -52,8 +52,13 @@ public class OnlineProcess extends Thread{
 			UI.model.addElement(Constants.FILE_NAMES[rankList.get(i).videoIndex] + " - (starts at frame: "+ rankList.get(i).startIndex+" )");
 			UI.videoFileValues[i] = Constants.BASE_PATH+Constants.FILE_NAMES[rankList.get(i).videoIndex]+Constants.VIDEO_FILE_EXTENSION;
 			UI.audioFileValues[i] = Constants.BASE_PATH+Constants.FILE_NAMES[rankList.get(i).videoIndex]+Constants.AUDIO_FILE_EXTENSION;
+			
+			int noOfFrames = errorPercentageList.get(rankList.get(i).videoIndex).size();
+			int videoIndex = rankList.get(i).videoIndex;
+			for(int j = 0; j < noOfFrames; j++) {
+				UI.errorList[i][j] = errorPercentageList.get(videoIndex).get(j).averageError;
+			}
 		}
-		
 	}	
 	
 	static boolean compareLessThan(ErrorData ed1, ErrorData ed2) {

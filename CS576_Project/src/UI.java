@@ -3,6 +3,8 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -26,6 +28,7 @@ public class UI extends JFrame {
 	static String[] videoFileNames = new String[Constants.NO_OF_FILES];
 	static String[] videoFileValues = new String[Constants.NO_OF_FILES];
 	static String[] audioFileValues = new String[Constants.NO_OF_FILES];
+	static float errorList[][] = new float[Constants.NO_OF_FILES][];
 	
 	public Container contentPane;
 	public static JTextField textField;
@@ -166,6 +169,7 @@ public class UI extends JFrame {
 						UI.audioFileName = audioFileValues[list.getSelectedIndex()];
 						UI.videoFileName = videoFileValues[list.getSelectedIndex()];
 						
+						float[] error = errorList[list.getSelectedIndex()];
 						if(UI.stop != null) {
 			                UI.stop.mouseClicked(null);
 						}
