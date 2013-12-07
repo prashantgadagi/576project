@@ -1,5 +1,9 @@
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -20,6 +24,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.Rectangle2D;
 
 
 @SuppressWarnings("serial")
@@ -63,6 +70,9 @@ public class UI extends JFrame {
 	public static String audioFileName;
 	public static String videoFileName;
 	
+	public static float[] errorPercentageArray;
+	public static JPanel histogramPanel;
+	
 
 	/**
 	 * Launch the application.
@@ -85,6 +95,8 @@ public class UI extends JFrame {
 		((JComponent) this.contentPane).setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(this.contentPane);
 		this.contentPane.setLayout(null);
+		
+		this.histogramPanel = new JPanel();
 		
 		UI.textField = new JTextField();
 		UI.textField.setBounds(191, 44, 257, 20);
@@ -168,7 +180,7 @@ public class UI extends JFrame {
 						UI.audioFileName = audioFileValues[list.getSelectedIndex()];
 						UI.videoFileName = videoFileValues[list.getSelectedIndex()];
 						
-						float[] error = errorList[list.getSelectedIndex()];
+						errorPercentageArray = errorList[list.getSelectedIndex()];
 						if(UI.stop != null) {
 			                UI.stop.mouseClicked(null);
 						}
@@ -212,6 +224,12 @@ public class UI extends JFrame {
 		this.contentPane.add(this.origVideoStop);
 		
 		slider = new JSlider();
+		slider.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseDragged(MouseEvent arg0) {
+				paintHistogram(UI.slider.getValue());
+			}
+		});
 		slider.addMouseListener(new SliderMotionListener());
 		slider.setPaintTicks(true);
 		slider.setBorder(null);
@@ -233,5 +251,50 @@ public class UI extends JFrame {
 		});
 		btnSearch.setBounds(96, 96, 85, 23);
 		contentPane.add(btnSearch);
+		
+		histogramPanel.setBounds(672, 193, 220, 58);
+		contentPane.add(histogramPanel);
 	}
+	
+	public static void paintHistogram(int index) {
+		 if(index >= UI.errorPercentageArray.length)
+			 return;
+		 int buffer = 10, maxValue = 100;
+		 int xOffset = 0, yOffset = 0, xPos = 0, yPos = 0;
+		 int width = UI.histogramPanel.getWidth() - 1;
+		 int height = UI.histogramPanel.getHeight() - 1;
+		 
+		 Graphics g = UI.histogramPanel.getGraphics();
+		 g.clearRect(0, 0, width, height);
+		 Graphics2D g2d = (Graphics2D) g.create();
+		 g2d.setColor(Color.DARK_GRAY);
+		 g2d.drawRect(xOffset, yOffset, width, height);
+		 
+		 int barWidth = Math.max(5, (int) Math.floor((float) width / (float) (2*buffer)));
+		 //System.out.println("width = " + width + "; height=" + height + "; size = " + UI.errorPercentageArray.length + "; barWidth = " + barWidth);
+		 
+		 int start = index - buffer;
+		 if(start < 0)
+			 start = 0;
+		 int end = index + buffer;
+		 if(end > UI.errorPercentageArray.length)
+			 end = UI.errorPercentageArray.length;
+		 
+		 for(int i = start; i < end; i++) {
+			     int barHeight = Math.round(((float) (100 - UI.errorPercentageArray[i]) / (float) maxValue) * height);
+			     g2d.setColor(new Color(100, 100, 100));
+			     yPos = height + yOffset - barHeight;
+			     Rectangle2D bar = new Rectangle.Float(xPos, yPos, barWidth, barHeight);
+			     if(i == index)
+			    	 g2d.setColor(Color.GREEN);
+			     else 
+			    	 g2d.setColor(Color.BLUE);
+			     g2d.fill(bar);
+			     g2d.setColor(Color.DARK_GRAY);
+			     g2d.draw(bar);
+			     xPos += barWidth;
+			 }
+		
+		g2d.dispose();
+   }
 }
