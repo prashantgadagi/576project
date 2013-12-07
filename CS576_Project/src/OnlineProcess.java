@@ -42,13 +42,12 @@ public class OnlineProcess extends Thread{
 		UI.model.removeAllElements();
 		sort(rankList);
 		for(int i = 0; i < Constants.FILE_NAMES.length; i++) {
-			float avg = (3*rankList.get(i).mError + 2*rankList.get(i).hError + rankList.get(i).yError) / 6;
 			System.out.println("Video: " + Constants.FILE_NAMES[rankList.get(i).videoIndex]
 					+ " \tMError: " + rankList.get(i).mError
 					+ " \tHError: " + rankList.get(i).hError
-					+ " \tYError: " + rankList.get(i).yError 
-					+ " \tIndex: " + rankList.get(i).startIndex
-					+ " \tAvg: " +  avg);
+					+ " \tYError: " + rankList.get(i).yError
+					+ " \tavgError: " + rankList.get(i).averageError 
+					+ " \tIndex: " + rankList.get(i).startIndex);
 			//UI.videoFileNames[i] = Constants.FILE_NAMES[rankList.get(i).videoIndex] + "( starts at : "+ rankList.get(i).startIndex+" frame";
 			UI.model.addElement(Constants.FILE_NAMES[rankList.get(i).videoIndex] + " - (starts at frame: "+ rankList.get(i).startIndex+" )");
 			UI.videoFileValues[i] = Constants.BASE_PATH+Constants.FILE_NAMES[rankList.get(i).videoIndex]+Constants.VIDEO_FILE_EXTENSION;
@@ -61,8 +60,8 @@ public class OnlineProcess extends Thread{
 		float a = 0, b = 0;
 		
 		if(Constants.SORT_FLAG == 1) {
-			a = (3 * ed1.mError) + (2 * ed1.hError) + (1 * ed1.yError);  
-			b = (3 * ed2.mError) + (2 * ed2.hError) + (1 * ed2.yError); 
+			a = ed1.averageError;
+			b = ed2.averageError;
 		} else if(Constants.SORT_FLAG == 2) {
 			a = ed1.mError;
 			b = ed2.mError;
@@ -84,7 +83,7 @@ public class OnlineProcess extends Thread{
 			for(int j = 0; j < rankList.size(); j++) {
 				if(compareLessThan(rankList.get(i), rankList.get(j))) {
 					ErrorData edTemp = new ErrorData(rankList.get(i).hError, 
-							rankList.get(i).yError, rankList.get(i).mError, rankList.get(i).startIndex, rankList.get(i).videoIndex);
+							rankList.get(i).yError, rankList.get(i).mError, rankList.get(i).averageError, rankList.get(i).startIndex, rankList.get(i).videoIndex);
 					rankList.get(i).Copy(rankList.get(j));
 					rankList.get(j).Copy(edTemp);
 				}
@@ -159,6 +158,7 @@ public class OnlineProcess extends Thread{
 			ed.mError = Integer.MAX_VALUE;
 			ed.hError = Integer.MAX_VALUE;
 			ed.yError = Integer.MAX_VALUE;
+			ed.averageError = Integer.MAX_VALUE;
 			rankList.add(ed);
 		}
 		
@@ -263,6 +263,7 @@ public class OnlineProcess extends Thread{
 				if(Constants.motion) {
 					queryWindowErrorData.mError = (mQueryWindowError / (queryParametersList.size()-1)) * 100;
 				}
+				queryWindowErrorData.averageError = ((3 * queryWindowErrorData.mError) + (2 * queryWindowErrorData.hError) + (1 * queryWindowErrorData.yError)) / 6;
 				queryWindowErrorData.startIndex = dbFramesIndex;
 				queryWindowErrorData.videoIndex = dbFilesIndex;
 				fileErrorData.add(queryWindowErrorData);

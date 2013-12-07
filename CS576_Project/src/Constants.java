@@ -36,4 +36,6 @@ public class Constants {
 	 */
 	public static int SORT_FLAG = 1; 
 	
+	
+	public static int HISTOGRAM_HIEGHT = 100;
 }
