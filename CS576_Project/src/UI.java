@@ -257,25 +257,25 @@ public class UI extends JFrame {
 		btnSearch.setBounds(96, 96, 85, 23);
 		contentPane.add(btnSearch);
 		
-		histogramPanel.setBounds(672, 193, 220, 58);
+		histogramPanel.setBounds(604, 180, 352, 71);
 		contentPane.add(histogramPanel);
 	}
 	
 	public static void paintHistogram(int index) {
 		 if(index >= UI.errorPercentageArray.length)
 			 return;
-		 int buffer = 10, maxValue = 100;
+		 int buffer = 13, maxValue = 100;
 		 int xOffset = 0, yOffset = 0, xPos = 0, yPos = 0;
-		 int width = UI.histogramPanel.getWidth();
-		 int height = UI.histogramPanel.getHeight();
+		 int width = UI.histogramPanel.getWidth() - 1;
+		 int height = UI.histogramPanel.getHeight() - 1;
 		 
 		 Graphics g = UI.histogramPanel.getGraphics();
 		 g.clearRect(0, 0, width, height);
 		 Graphics2D g2d = (Graphics2D) g.create();
 		 g2d.setColor(Color.DARK_GRAY);
-		 g2d.drawRect(xOffset, yOffset, width, height);
+		 g2d.drawRect(xOffset, yOffset, width - 13, height);
 		 
-		 int barWidth = Math.max(5, (int) Math.floor((float) width / (float) (2*buffer)));
+		 int barWidth = Math.max(5, (int) Math.floor((float) width / (float) (2*buffer+1)));
 		 //System.out.println("width = " + width + "; height=" + height + "; size = " + UI.errorPercentageArray.length + "; barWidth = " + barWidth);
 		 
 		 int start = index - buffer;
