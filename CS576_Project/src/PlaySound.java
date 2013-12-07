@@ -32,7 +32,7 @@ public class PlaySound {
 		} catch (IOException e1) {
 			throw new PlayWaveException(e1);
 		}
-
+		
 		// Obtain the information about the AudioInputStream
 		AudioFormat audioFormat = audioInputStream.getFormat();
 		Info info = new Info(SourceDataLine.class, audioFormat);

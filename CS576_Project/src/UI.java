@@ -3,8 +3,7 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.channels.FileChannel;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -213,6 +212,7 @@ public class UI extends JFrame {
 		this.contentPane.add(this.origVideoStop);
 		
 		slider = new JSlider();
+		slider.addMouseListener(new SliderMotionListener());
 		slider.setPaintTicks(true);
 		slider.setBorder(null);
 		slider.setBounds(604, 273, 352, 31);

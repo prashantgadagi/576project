@@ -55,6 +55,7 @@ public class OnlineProcess extends Thread{
 			
 			int noOfFrames = errorPercentageList.get(rankList.get(i).videoIndex).size();
 			int videoIndex = rankList.get(i).videoIndex;
+			UI.errorList[i] = new float[noOfFrames];
 			for(int j = 0; j < noOfFrames; j++) {
 				UI.errorList[i][j] = errorPercentageList.get(videoIndex).get(j).averageError;
 			}
