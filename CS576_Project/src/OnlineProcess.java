@@ -42,12 +42,12 @@ public class OnlineProcess extends Thread{
 		UI.model.removeAllElements();
 		sort(rankList);
 		for(int i = 0; i < Constants.FILE_NAMES.length; i++) {
-			System.out.println("Video: " + Constants.FILE_NAMES[rankList.get(i).videoIndex]
+			/*System.out.println("Video: " + Constants.FILE_NAMES[rankList.get(i).videoIndex]
 					+ " \tMError: " + rankList.get(i).mError
 					+ " \tHError: " + rankList.get(i).hError
 					+ " \tYError: " + rankList.get(i).yError
 					+ " \tavgError: " + rankList.get(i).averageError 
-					+ " \tIndex: " + rankList.get(i).startIndex);
+					+ " \tIndex: " + rankList.get(i).startIndex);*/
 			//UI.videoFileNames[i] = Constants.FILE_NAMES[rankList.get(i).videoIndex] + "( starts at : "+ rankList.get(i).startIndex+" frame";
 			UI.model.addElement(Constants.FILE_NAMES[rankList.get(i).videoIndex] + " - (starts at frame: "+ rankList.get(i).startIndex+" )");
 			UI.videoFileValues[i] = Constants.BASE_PATH+Constants.FILE_NAMES[rankList.get(i).videoIndex]+Constants.VIDEO_FILE_EXTENSION;

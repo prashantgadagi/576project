@@ -30,7 +30,7 @@ public class PlayRGBQueryVideo extends Thread{
 		
 		JLabel label;
 		try {
-			File file = new File(this.file, "r");
+			File file = new File(this.file);
 			is = new FileInputStream(file);
 
 			long len = file.length();

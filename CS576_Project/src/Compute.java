@@ -69,7 +69,7 @@ public class Compute {
 					Constants.initialized = true;
 				}
 				
-				System.out.println("No of frames:"+frameParametersList.size());
+				//System.out.println("No of frames:"+frameParametersList.size());
 				List<List<Double>> motionVectorList = Compute.getMotionVectors(filePath);
 				for(int i = 0; i < frameParametersList.size() - 1; i++) {
 					for(int j = 0; j < motionVectorList.get(i).size(); j++) {
