@@ -2,7 +2,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 
-public class SliderMotionListener extends MouseAdapter {	
+public class SliderMotionListener extends MouseAdapter {
+	private int MAX_SKIP = 65536;
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 		if(UI.play != null) {
@@ -18,8 +19,8 @@ public class SliderMotionListener extends MouseAdapter {
 				UI.audioThread.playSound.audioInputStream.reset();
 				UI.audioThread.playSound.dataLine.flush();
 				while (audioPos > 0) {
-					UI.audioThread.playSound.audioInputStream.skip(audioPos > 65536 ? 65536 : audioPos);
-					audioPos -= 65536;
+					UI.audioThread.playSound.audioInputStream.skip(audioPos > MAX_SKIP ? MAX_SKIP : audioPos);
+					audioPos -= MAX_SKIP;
 				}		
 			} catch (IOException e) {
 				System.out.println(e.getMessage());

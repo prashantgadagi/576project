@@ -178,6 +178,8 @@ public class UI extends JFrame {
 				if(!list.getValueIsAdjusting()) {
 					if(list.isSelectedIndex(list.getSelectedIndex())) {
 						UI.slider.setValue(0);
+						UI.histogramPanel.removeAll();
+						UI.histogramPanel.repaint();
 						UI.audioFileName = audioFileValues[list.getSelectedIndex()];
 						UI.videoFileName = videoFileValues[list.getSelectedIndex()];
 						
@@ -239,7 +241,7 @@ public class UI extends JFrame {
 		slider.setBounds(604, 273, 352, 31);
 		slider.setValue(0);
 		slider.setMajorTickSpacing(10);
-		slider.setMinorTickSpacing(2);
+		slider.setMinorTickSpacing(1);
 		contentPane.add(slider);
 		
 		JButton btnSearch = new JButton("Search");
