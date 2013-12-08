@@ -49,7 +49,7 @@ public class OnlineProcess extends Thread{
 					+ " \tavgError: " + rankList.get(i).averageError 
 					+ " \tIndex: " + rankList.get(i).startIndex);*/
 			//UI.videoFileNames[i] = Constants.FILE_NAMES[rankList.get(i).videoIndex] + "( starts at : "+ rankList.get(i).startIndex+" frame";
-			UI.model.addElement(Constants.FILE_NAMES[rankList.get(i).videoIndex] + " - (starts at frame: "+ rankList.get(i).startIndex+" )");
+			UI.model.addElement(Constants.FILE_NAMES[rankList.get(i).videoIndex] + " - (Match : "+ String.format("%.2f",(100-rankList.get(i).averageError)) +"% --- starts at frame: "+ rankList.get(i).startIndex+" )");
 			UI.videoFileValues[i] = Constants.BASE_PATH+Constants.FILE_NAMES[rankList.get(i).videoIndex]+Constants.VIDEO_FILE_EXTENSION;
 			UI.audioFileValues[i] = Constants.BASE_PATH+Constants.FILE_NAMES[rankList.get(i).videoIndex]+Constants.AUDIO_FILE_EXTENSION;
 			UI.bestMatchArray[i] = rankList.get(i).startIndex;

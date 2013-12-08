@@ -6,8 +6,9 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
-import java.nio.channels.FileChannel;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -24,9 +25,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import java.awt.event.MouseMotionAdapter;
-import java.awt.geom.Rectangle2D;
 
 
 @SuppressWarnings("serial")
@@ -89,7 +87,7 @@ public class UI extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked", "rawtypes", "static-access"})
 	public UI() {
 		
 		setResizable(false);
@@ -120,7 +118,6 @@ public class UI extends JFrame {
 		                String queryVideo = file.getAbsolutePath();
 		                UI.textField.setText(queryVideo);
 		                String audioName = queryVideo.substring(queryVideo.indexOf("query"),queryVideo.indexOf("query")+6);
-		                System.out.println(audioName);
 		                String queryAudio = Constants.BASE_PATH+audioName+".wav";
 		                
 		                UI.queryAudioFileName = queryAudio;

@@ -25,6 +25,7 @@ public class StopButtonEvent extends MouseAdapter {
 			UI.videoPaused = false;
 			this.panel.removeAll();
 			this.panel.repaint();
+			UI.slider.setValue(0);
 		}		
 	}
 }
