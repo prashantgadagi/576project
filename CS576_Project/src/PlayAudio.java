@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 
 public class PlayAudio extends Thread {
 	String filename;
+	PlaySound playSound;
 	
 	public PlayAudio() {}
 	
@@ -23,7 +24,7 @@ public class PlayAudio extends Thread {
 		}
 
 		// initializes the playSound Object
-		PlaySound playSound = new PlaySound(new BufferedInputStream(inputStream));
+		playSound = new PlaySound(new BufferedInputStream(inputStream));
 
 		// plays the sound
 		try {

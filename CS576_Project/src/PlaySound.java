@@ -1,5 +1,6 @@
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.text.Format;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -8,12 +9,18 @@ import javax.sound.sampled.DataLine.Info;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 public class PlaySound {
 
 	private BufferedInputStream waveStream;
 
-	private final int EXTERNAL_BUFFER_SIZE = 524288; // 128Kb
+	//private final int EXTERNAL_BUFFER_SIZE = 524288; // 128Kb
+	private final int EXTERNAL_BUFFER_SIZE = 3000; // 128Kb
+	
+	AudioInputStream audioInputStream; 
+	long frameLength;
+	SourceDataLine dataLine;
 
 	/**
 	 * CONSTRUCTOR
@@ -24,7 +31,6 @@ public class PlaySound {
 
 	public void play() throws PlayWaveException {
 
-		AudioInputStream audioInputStream = null;
 		try {
 			audioInputStream = AudioSystem.getAudioInputStream(this.waveStream);
 		} catch (UnsupportedAudioFileException e1) {
@@ -38,7 +44,7 @@ public class PlaySound {
 		Info info = new Info(SourceDataLine.class, audioFormat);
 
 		// opens the audio channel
-		SourceDataLine dataLine = null;
+		dataLine = null;
 		try {
 			dataLine = (SourceDataLine) AudioSystem.getLine(info);
 			dataLine.open(audioFormat, this.EXTERNAL_BUFFER_SIZE);
@@ -51,15 +57,19 @@ public class PlaySound {
 
 		int readBytes = 0;
 		byte[] audioBuffer = new byte[this.EXTERNAL_BUFFER_SIZE];
-
+		audioInputStream.mark(Integer.MAX_VALUE);
+		frameLength = audioInputStream.getFrameLength();
+		
 		try {
 			while (readBytes != -1) {
 				readBytes = audioInputStream.read(audioBuffer, 0,
 						audioBuffer.length);
+					
 				if (readBytes >= 0) {
 					dataLine.write(audioBuffer, 0, readBytes);
 				}
 			}
+			//System.out.println(audioInputStream.getFrameLength() + "; Total: " + total);
 		} catch (IOException e1) {
 			throw new PlayWaveException(e1);
 		} finally {
