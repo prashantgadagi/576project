@@ -241,7 +241,6 @@ public class UI extends JFrame {
 		slider.setBounds(604, 273, 352, 31);
 		slider.setValue(0);
 		slider.setMajorTickSpacing(10);
-		slider.setMinorTickSpacing(1);
 		contentPane.add(slider);
 		
 		JButton btnSearch = new JButton("Search");
@@ -257,7 +256,7 @@ public class UI extends JFrame {
 		btnSearch.setBounds(96, 96, 85, 23);
 		contentPane.add(btnSearch);
 		
-		histogramPanel.setBounds(604, 180, 352, 71);
+		histogramPanel.setBounds(610, 180, 352, 71);
 		contentPane.add(histogramPanel);
 	}
 	
