@@ -280,31 +280,35 @@ public class Compute {
 	 * @param referenceImage
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private static List<Double> computeSoundMetric(byte[] byteArray) {
-		List<Double> motionVectors = new ArrayList<Double>();
-		
-		for(SearchCoords sc : Constants.coordList) {
-			int startX = sc.i - Constants.P;
-			int startY = sc.j - Constants.P;
-			int endX = sc.i + Constants.MB_SIZE + Constants.P;
-			int endY = sc.j + Constants.MB_SIZE + Constants.P;
+		List<Double> motionVectors = null;
+		if(false) {
+			motionVectors = new ArrayList<Double>();
 			
-			List<SAD> sadList = new ArrayList<SAD>();
-			
-			for (int y = startY; y < endY - (Constants.MB_SIZE); y++) {
-				for (int x = startX; x < (endX - Constants.MB_SIZE); x++) {
-					sadList.add(new SAD(computeRootMeanSquare(sc.i, sc.j, x, y, byteArray),x,y));
+			for(SearchCoords sc : Constants.coordList) {
+				int startX = sc.i - Constants.P;
+				int startY = sc.j - Constants.P;
+				int endX = sc.i + Constants.MB_SIZE + Constants.P;
+				int endY = sc.j + Constants.MB_SIZE + Constants.P;
+				
+				List<SAD> sadList = new ArrayList<SAD>();
+				
+				for (int y = startY; y < endY - (Constants.MB_SIZE); y++) {
+					for (int x = startX; x < (endX - Constants.MB_SIZE); x++) {
+						sadList.add(new SAD(computeRootMeanSquare(sc.i, sc.j, x, y, byteArray),x,y));
+					}
 				}
-			}
-			
-			SAD minSAD = sadList.get(0);
-			for(SAD s : sadList) {
-				if(s.SAD < minSAD.SAD) {
-					minSAD = s;
+				
+				SAD minSAD = sadList.get(0);
+				for(SAD s : sadList) {
+					if(s.SAD < minSAD.SAD) {
+						minSAD = s;
+					}
 				}
+				
+				motionVectors.add(euclideanDistance(sc.i+5, sc.j+5, minSAD.i+5, minSAD.j+5));
 			}
-			
-			motionVectors.add(euclideanDistance(sc.i+5, sc.j+5, minSAD.i+5, minSAD.j+5));
 		}
 		return motionVectors;
 	}
