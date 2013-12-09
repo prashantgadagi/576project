@@ -270,7 +270,10 @@ public class OnlineProcess extends Thread{
 				if(Constants.motion) {
 					queryWindowErrorData.mError = (mQueryWindowError / (queryParametersList.size()-1)) * 100;
 				}
-				queryWindowErrorData.averageError = ((3 * queryWindowErrorData.mError) + (2 * queryWindowErrorData.hError) + (1 * queryWindowErrorData.yError)) / 6;
+				queryWindowErrorData.averageError = ((3 * queryWindowErrorData.mError) 
+													+ (2 * queryWindowErrorData.hError) 
+													+ (1 * queryWindowErrorData.yError)
+													+ (1 * queryWindowErrorData.audioError)) / 6;
 				queryWindowErrorData.startIndex = dbFramesIndex;
 				queryWindowErrorData.videoIndex = dbFilesIndex;
 				fileErrorData.add(queryWindowErrorData);

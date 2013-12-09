@@ -5,6 +5,7 @@ public class ErrorData {
         public float averageError;
         public int startIndex;
         public int videoIndex;
+        public int audioError;
         
         
         public ErrorData() {
@@ -14,6 +15,7 @@ public class ErrorData {
                 averageError = 0;
                 startIndex = 0;
                 videoIndex = 0;
+                audioError = 0;
         }
         
         public ErrorData(float h, float y, float m,  float avg, int si, int vi) {
@@ -23,6 +25,7 @@ public class ErrorData {
                 averageError = avg;
                 startIndex = si;
                 videoIndex = vi;
+                audioError = 0;
         }
         
         public void Copy(ErrorData ed) {
