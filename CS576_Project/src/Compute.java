@@ -10,6 +10,7 @@ public class Compute {
 
 	static void getParametersList(
 			ArrayList<MatchParameters> frameParametersList, String filePath) {
+		byte[] byteArray = new byte[100];
 		InputStream is;
 		File file = new File(filePath);
 		long len = file.length();
@@ -75,7 +76,10 @@ public class Compute {
 						frameParametersList.get(i).motion[j] = motionVectorList.get(i).get(j);
 					}
 				}
+				
+				computeSoundMetric(byteArray);
 			}
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -268,5 +272,60 @@ public class Compute {
 	
 	static int rgbToyuv(int red, int green, int blue) {
 		return (int) ((0.299 * red) + (0.587 * green) + (0.114 * blue));
+	}
+	
+	/**
+	 * 
+	 * @param sourceImage
+	 * @param referenceImage
+	 * @return
+	 */
+	private static List<Double> computeSoundMetric(byte[] byteArray) {
+		List<Double> motionVectors = new ArrayList<Double>();
+		
+		for(SearchCoords sc : Constants.coordList) {
+			int startX = sc.i - Constants.P;
+			int startY = sc.j - Constants.P;
+			int endX = sc.i + Constants.MB_SIZE + Constants.P;
+			int endY = sc.j + Constants.MB_SIZE + Constants.P;
+			
+			List<SAD> sadList = new ArrayList<SAD>();
+			
+			for (int y = startY; y < endY - (Constants.MB_SIZE); y++) {
+				for (int x = startX; x < (endX - Constants.MB_SIZE); x++) {
+					sadList.add(new SAD(computeRootMeanSquare(sc.i, sc.j, x, y, byteArray),x,y));
+				}
+			}
+			
+			SAD minSAD = sadList.get(0);
+			for(SAD s : sadList) {
+				if(s.SAD < minSAD.SAD) {
+					minSAD = s;
+				}
+			}
+			
+			motionVectors.add(euclideanDistance(sc.i+5, sc.j+5, minSAD.i+5, minSAD.j+5));
+		}
+		return motionVectors;
+	}
+
+	/**
+	 * Return the Sum of Absolute Differences of the search area
+	 * @param i
+	 * @param j
+	 * @param x
+	 * @param y
+	 * @param sourceImage
+	 * @param referenceImage
+	 * @return
+	 */
+	private static double computeRootMeanSquare(int i, int j, int x, int y, byte[] byteArray) {
+		double sqr = 0;
+		for (int a = 0; a < Constants.MB_SIZE; a++) {
+			for (int b = 0; b < Constants.MB_SIZE; b++) {
+				sqr += Math.pow(byteArray[i],2);
+			}
+		}
+		return Math.sqrt(sqr/byteArray.length);
 	}
 }
